@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import RegisterPage from './Pages/Register/RegisterPage'
 import LoginPage from './Pages/Login/LoginPage';
 import HomePage from './Pages/Home/HomePage';
-import ChatPage from './Pages/Chat/ChatPage';
+import ChatContainer from './Pages/Chat/ChatContainer';
 import ProfilePage from './Pages/Profile/ProfilePage';
 import FooterNav from './layouts/FooterNav';
 
@@ -17,7 +17,7 @@ function AppWrapper() {
         <Route path="/" element={<HomePage />} />
         <Route path="/register" element={<RegisterPage />}/>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/chat" element={<ChatPage />} />
+        <Route path="/chat" element={<ChatContainer />} />
         <Route path="/profile" element={<ProfilePage />} />
       </Routes>
       {!hideFooter && <FooterNav />}
