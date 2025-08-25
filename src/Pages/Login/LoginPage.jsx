@@ -1,11 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { 
+  Container, 
+  Paper, 
+  Typography, 
+  TextField, 
+  Button, 
+  Box,
+  Link,
+  InputAdornment,
+  IconButton
+} from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
-
-
-// App.jsx
-function LoginPage() {
+const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [output, setOutput] = useState('');
 
   const login = async () => {
@@ -27,40 +37,91 @@ function LoginPage() {
     }
   };
 
-  const getProtected = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:8080/users', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
-      setOutput(JSON.stringify(data, null, 2));
-    } catch (err) {
-      console.error(err);
-      setOutput('Failed to fetch protected data');
-    }
-  };
-
-  const logout = () => {
-    localStorage.removeItem('token');
-    setOutput('Logged out');
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    login();
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>Login</h2>
-      <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} />
-      <input placeholder="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} />
-      <button onClick={login}>Login</button>
-      <button onClick={logout}>Logout</button>
+    <Container maxWidth="sm" sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', py: 4, pb: 12 }}>
+      <Paper elevation={3} sx={{ p: 4, width: '100%' }}>
+        <Box sx={{ textAlign: 'center', mb: 4 }}>
+          <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
+            RideTogether
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Sign in to your account
+          </Typography>
+        </Box>
 
-      <h2>Protected Data</h2>
-      <button onClick={getProtected}>Get Protected</button>
-      <pre>{output}</pre>
-    </div>
+        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <TextField
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email"
+            required
+            fullWidth
+            variant="outlined"
+          />
+          
+          <TextField
+            label="Password"
+            type={showPassword ? 'text' : 'password'}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter your password"
+            required
+            fullWidth
+            variant="outlined"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={() => setShowPassword(!showPassword)}
+                    edge="end"
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
+          />
+
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            sx={{ 
+              mt: 2, 
+              py: 1.5, 
+              backgroundColor: '#ef5350', 
+              '&:hover': { backgroundColor: '#d32f2f' },
+              fontWeight: 'bold'
+            }}
+          >
+            Sign In
+          </Button>
+
+          {output && (
+            <Typography variant="body2" sx={{ textAlign: 'center', mt: 2, color: output.includes('failed') ? 'error.main' : 'success.main' }}>
+              {output}
+            </Typography>
+          )}
+
+          <Box sx={{ textAlign: 'center', mt: 3 }}>
+            <Typography variant="body2" color="text.secondary">
+              Don't have an account?{' '}
+              <Link href="/register" sx={{ color: '#ef5350', fontWeight: 'medium' }}>
+                Sign up
+              </Link>
+            </Typography>
+          </Box>
+        </Box>
+      </Paper>
+    </Container>
   );
-}
+};
 
 export default LoginPage;
-
-

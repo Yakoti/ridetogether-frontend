@@ -1,24 +1,65 @@
-import { Link, useLocation } from 'react-router-dom';
+
+import { useLocation, useNavigate } from 'react-router-dom';
+import BottomNavigation from '@mui/material/BottomNavigation';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
+import HomeIcon from '@mui/icons-material/Home';
+import ChatIcon from '@mui/icons-material/Chat';
+import PersonIcon from '@mui/icons-material/Person';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import Badge from '@mui/material/Badge';
 
 const FooterNav = () => {
-    const { pathname } = useLocation();
-
-    return (
-        <div style={{
-            position: 'fixed',
-            bottom: 0,
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'space-around',
-            padding: '10px 0',
-            borderTop: '1px solid #ccc',
-            background: '#fff'
-          }}>
-            <Link style={{ color: pathname === '/' ? 'blue' : 'gray' }} to="/">Home</Link>
-            <Link style={{ color: pathname === '/chat' ? 'blue' : 'gray' }} to="/chat">Chat</Link>
-            <Link style={{ color: pathname === '/profile' ? 'blue' : 'gray' }} to="/profile">Profile</Link>
-            </div>
-    );
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const getValue = () => {
+    if (pathname === '/chat') return 'chat';
+    if (pathname === '/profile') return 'profile';
+    return 'home';
+  };
+  return (
+    <BottomNavigation
+      value={getValue()}
+      onChange={(event, newValue) => {
+        navigate(newValue === 'home' ? '/' : `/${newValue}`);
+      }}
+      showLabels
+      sx={{ 
+        position: 'fixed', 
+        bottom: 0, 
+        left: 0, 
+        width: '100%', 
+        zIndex: 1200,
+        borderTop: '1px solid #e0e0e0',
+        '& .MuiBottomNavigationAction-root': {
+          color: '#999',
+          '&.Mui-selected': {
+            color: '#ef5350'
+          }
+        }
+      }}
+    >
+      <BottomNavigationAction 
+        label="Home" 
+        value="home" 
+        icon={<HomeIcon />} 
+      />
+      <BottomNavigationAction 
+        label="Chat" 
+        value="chat" 
+        icon={
+          <Badge badgeContent={2} color="error">
+            <ChatIcon />
+          </Badge>
+        } 
+      />
+      <BottomNavigationAction 
+        label="Profile" 
+        value="profile" 
+        icon={<PersonIcon />} 
+      />
+     
+    </BottomNavigation>
+  );
 };
 
 export default FooterNav;

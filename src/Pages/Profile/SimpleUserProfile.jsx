@@ -1,194 +1,21 @@
-// import React, { useState, useEffect } from 'react';
-// import { User, Save } from 'lucide-react';
-// import './SimpleUserProfile.css';
-
-// const SimpleUserProfile = () => {
-//   const [user, setUser] = useState(null);
-//   const [loading, setIsLoading] = useState(false);
-
-//   const API_BASE = 'http://localhost:8080/users';
-//   const USER_ID = 1;
-
-//   useEffect(() => {
-//     fetchUser();
-//   }, []);
-
-//   const fetchUser = async () => {
-//     setIsLoading(true);
-//     //abort fetching after 1 sec
-//     const controller = new AbortController();
-//     const timeoutId = setTimeout(() => controller.abort(), 200);
-
-//     try {
-//       const response = await fetch(`${API_BASE}/${USER_ID}`, {
-//         signal: controller.signal
-//       });
-//       clearTimeout(timeoutId);
-
-
-//       if (response.ok) {
-//         const userData = await response.json();
-//         setUser(userData);
-//       } else {
-//         console.error('Failed to fetch user');
-//         setUser(defaultUser());
-//       }
-//     } catch (error) {
-//       console.error('Error fetching user:', error);
-//       setUser(defaultUser());
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   };
-
-//   const defaultUser = () => ({
-//     id: USER_ID,
-//     name: 'John Doe',
-//     role: 'PASSENGER',
-//     homeAddress: 'Vitosha Boulevard 1, Sofia',
-//     officeAddress: 'Business Park Sofia, Sofia',
-//     preferredArrivalStart: '09:00',
-//     preferredArrivalEnd: '09:30',
-//     flexibilityMinutes: 15,
-//     flexibilityKm: 2.0,
-//     availableSeats: 0
-//   });
-
-//   const updateUser = async () => {
-//     setIsLoading(true);
-//     console.log(JSON.stringify(user));
-//     try {
-//       const response = await fetch(`${API_BASE}/${user.id}`, {
-//         method: 'PUT',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify(user)
-//       });
-//       if (response.ok) {
-//         const updatedUser = await response.json();
-//         setUser(updatedUser);
-//         alert('Profile updated successfully!');
-//       } else {
-//         alert('Failed to update profile');
-//       }
-//     } catch (error) {
-//       console.error('Error updating user:', error);
-//       alert('Error updating profile');
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   };
-
-//   const handleChange = (field, value) => {
-//     setUser(prev => ({ ...prev, [field]: value }));
-//   };
-
-//   if (!user) {
-//     return (
-//       <div className="loading-container">
-//         <div className="spinner"></div>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="profile-container">
-//       <div className="profile-header">
-//         <div className="profile-header-inner">
-//           <h1 className="title">Profile Settings</h1>
-//           <div className="role-display">
-//             <div className={`role-badge ${user.role.toLowerCase()}`}>
-//               {user.role}
-//             </div>
-//             <User size={20} className="user-icon" />
-//           </div>
-//         </div>
-//       </div>
-
-//       <div className="profile-content">
-//         <div className="form">
-//           <div className="form-group">
-//             <label>Name</label>
-//             <input type="text" value={user.name || ''} onChange={e => handleChange('name', e.target.value)} />
-//           </div>
-
-//           <div className="form-group">
-//             <label>Role</label>
-//             <div className="radio-group">
-//               <label><input type="radio" checked={user.role === 'DRIVER'} onChange={() => handleChange('role', 'DRIVER')} /> Driver</label>
-//               <label><input type="radio" checked={user.role === 'PASSENGER'} onChange={() => handleChange('role', 'PASSENGER')} /> Passenger</label>
-//             </div>
-//           </div>
-
-//           <div className="form-group">
-//             <label>Home Address</label>
-//             <input type="text" value={user.homeAddress || ''} onChange={e => handleChange('homeAddress', e.target.value)} />
-//           </div>
-
-//           <div className="form-group">
-//             <label>Office Address</label>
-//             <input type="text" value={user.officeAddress || ''} onChange={e => handleChange('officeAddress', e.target.value)} />
-//           </div>
-
-//           <div className="form-row">
-//             <div className="form-group">
-//               <label>Arrival Start</label>
-//               <input type="time" value={user.preferredArrivalStart || ''} onChange={e => handleChange('preferredArrivalStart', e.target.value)} />
-//             </div>
-//             <div className="form-group">
-//               <label>Arrival End</label>
-//               <input type="time" value={user.preferredArrivalEnd || ''} onChange={e => handleChange('preferredArrivalEnd', e.target.value)} />
-//             </div>
-//           </div>
-
-//           <div className="form-row">
-//             <div className="form-group">
-//               <label>Flexibility (minutes)</label>
-//               <input type="number" value={user.flexibilityMinutes || ''} onChange={e => handleChange('flexibilityMinutes', parseInt(e.target.value) || 0)} />
-//             </div>
-//             <div className="form-group">
-//               <label>Flexibility (km)</label>
-//               <input type="number" step="0.1" value={user.flexibilityKm || ''} onChange={e => handleChange('flexibilityKm', parseFloat(e.target.value) || 0)} />
-//             </div>
-//           </div>
-
-//           {user.role === 'DRIVER' && (
-//             <div className="form-group">
-//               <label>Available Seats</label>
-//               <input type="number" value={user.availableSeats || ''} onChange={e => handleChange('availableSeats', parseInt(e.target.value) || 0)} />
-//             </div>
-//           )}
-
-//           <button className="save-button" onClick={updateUser} disabled={loading}>
-//             <Save size={16} />
-//             {loading ? 'Saving...' : 'Save Changes'}
-//           </button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default SimpleUserProfile;
-
-
-
-
-//---------------------------------------------//
-
 import React, { useState, useEffect } from 'react';
-import { User, Save } from 'lucide-react';
-import {
-  Box,
+import { 
+  Container,
+  Paper,
   Typography,
   TextField,
+  Button,
+  Box,
+  FormControl,
+  FormLabel,
   RadioGroup,
   FormControlLabel,
   Radio,
-  FormControl,
-  FormLabel,
-  Button,
+  Grid,
   CircularProgress,
+  Chip
 } from '@mui/material';
+import { Save, Person } from '@mui/icons-material';
 
 const SimpleUserProfile = () => {
   const [user, setUser] = useState(null);
@@ -227,15 +54,15 @@ const SimpleUserProfile = () => {
 
   const defaultUser = () => ({
     id: USER_ID,
-    name: 'John Doe',
-    role: 'PASSENGER',
+    name: 'John Driver',
+    role: 'DRIVER',
     homeAddress: 'Vitosha Boulevard 1, Sofia',
     officeAddress: 'Business Park Sofia, Sofia',
-    preferredArrivalStart: '09:00',
-    preferredArrivalEnd: '09:30',
+    preferredArrivalStart: '10:00',
+    preferredArrivalEnd: '10:30',
     flexibilityMinutes: 15,
     flexibilityKm: 2.0,
-    availableSeats: 0,
+    availableSeats: 3,
   });
 
   const updateUser = async () => {
@@ -266,133 +93,155 @@ const SimpleUserProfile = () => {
 
   if (!user) {
     return (
-      <Box display="flex" justifyContent="center" mt={5}>
-        <CircularProgress />
-      </Box>
+      <Container maxWidth="sm" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+        <CircularProgress sx={{ color: '#ef5350' }} />
+      </Container>
     );
   }
 
   return (
-    <Box maxWidth={600} mx="auto" p={2}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h4">Profile Settings</Typography>
-        <Box display="flex" alignItems="center" gap={1}>
-          <Box
+    <><Container maxWidth="sm" sx={{ py: 2, pb: 2 }}>
+      <Paper elevation={3} sx={{ p: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#333' }}>
+            Profile Settings
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Chip
+              label={user.role}
+              size="small"
+              sx={{
+                backgroundColor: user.role === 'DRIVER' ? '#e3f2fd' : '#e8f5e8',
+                color: user.role === 'DRIVER' ? '#1976d2' : '#2e7d32',
+                fontWeight: 'bold'
+              }} />
+            <Person sx={{ color: '#666' }} />
+          </Box>
+        </Box>
+
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <TextField
+            label="Name"
+            value={user.name || ''}
+            onChange={(e) => handleChange('name', e.target.value)}
+            fullWidth
+            variant="outlined" />
+
+          <FormControl component="fieldset">
+            <FormLabel component="legend" sx={{ color: '#666', fontWeight: 'bold' }}>Role</FormLabel>
+            <RadioGroup
+              row
+              value={user.role}
+              onChange={(e) => handleChange('role', e.target.value)}
+            >
+              <FormControlLabel value="DRIVER" control={<Radio />} label="Driver" />
+              <FormControlLabel value="PASSENGER" control={<Radio />} label="Passenger" />
+            </RadioGroup>
+          </FormControl>
+
+          <TextField
+            label="Home Address"
+            value={user.homeAddress || ''}
+            onChange={(e) => handleChange('homeAddress', e.target.value)}
+            fullWidth
+            variant="outlined" />
+
+          <TextField
+            label="Office Address"
+            value={user.officeAddress || ''}
+            onChange={(e) => handleChange('officeAddress', e.target.value)}
+            fullWidth
+            variant="outlined" />
+
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TextField
+                label="Arrival Start"
+                type="time"
+                value={user.preferredArrivalStart || ''}
+                onChange={(e) => handleChange('preferredArrivalStart', e.target.value)}
+                fullWidth
+                variant="outlined"
+                InputLabelProps={{ shrink: true }} />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="Arrival End"
+                type="time"
+                value={user.preferredArrivalEnd || ''}
+                onChange={(e) => handleChange('preferredArrivalEnd', e.target.value)}
+                fullWidth
+                variant="outlined"
+                InputLabelProps={{ shrink: true }} />
+            </Grid>
+          </Grid>
+
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TextField
+                label="Flexibility (minutes)"
+                type="number"
+                value={user.flexibilityMinutes || ''}
+                onChange={(e) => handleChange('flexibilityMinutes', parseInt(e.target.value) || 0)}
+                fullWidth
+                variant="outlined"
+                inputProps={{ min: 0 }} />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                label="Flexibility (km)"
+                type="number"
+                value={user.flexibilityKm || ''}
+                onChange={(e) => handleChange('flexibilityKm', parseFloat(e.target.value) || 0)}
+                fullWidth
+                variant="outlined"
+                inputProps={{ min: 0, step: 0.1 }} />
+            </Grid>
+          </Grid>
+
+          {user.role === 'DRIVER' && (
+            <TextField
+              label="Free Spaces"
+              type="number"
+              value={user.availableSeats || ''}
+              onChange={(e) => handleChange('availableSeats', parseInt(e.target.value) || 0)}
+              fullWidth
+              variant="outlined"
+              inputProps={{ min: 1, max: 8 }} />
+          )}
+
+          <Button
+            onClick={updateUser}
+            disabled={loading}
+            variant="contained"
+            fullWidth
+            startIcon={loading ? <CircularProgress size={20} /> : <Save />}
             sx={{
-              px: 2,
-              py: 0.5,
-              bgcolor: user.role === 'DRIVER' ? 'primary.main' : 'secondary.main',
-              color: 'white',
-              borderRadius: 1,
-              textTransform: 'uppercase',
-              fontWeight: 'bold',
+              mt: 1,
+              backgroundColor: '#ef5350',
+              '&:hover': { backgroundColor: '#d32f2f' },
+              fontWeight: 'bold'
             }}
           >
-            {user.role}
-          </Box>
-          <User size={24} />
+            {loading ? 'Saving...' : 'Save Changes'}
+          </Button>
         </Box>
-      </Box>
-
-      <Box component="form" noValidate autoComplete="off">
-        <TextField
-          fullWidth
-          label="Name"
-          value={user.name || ''}
-          onChange={e => handleChange('name', e.target.value)}
-          margin="normal"
-        />
-
-        <FormControl component="fieldset" margin="normal">
-          <FormLabel component="legend">Role</FormLabel>
-          <RadioGroup
-            row
-            value={user.role}
-            onChange={e => handleChange('role', e.target.value)}
-          >
-            <FormControlLabel value="DRIVER" control={<Radio />} label="Driver" />
-            <FormControlLabel value="PASSENGER" control={<Radio />} label="Passenger" />
-          </RadioGroup>
-        </FormControl>
-
-        <TextField
-          fullWidth
-          label="Home Address"
-          value={user.homeAddress || ''}
-          onChange={e => handleChange('homeAddress', e.target.value)}
-          margin="normal"
-        />
-
-        <TextField
-          fullWidth
-          label="Office Address"
-          value={user.officeAddress || ''}
-          onChange={e => handleChange('officeAddress', e.target.value)}
-          margin="normal"
-        />
-
-        <Box display="flex" gap={2} mt={2}>
-          <TextField
-            label="Arrival Start"
-            type="time"
-            value={user.preferredArrivalStart || ''}
-            onChange={e => handleChange('preferredArrivalStart', e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            sx={{ flex: 1 }}
-          />
-          <TextField
-            label="Arrival End"
-            type="time"
-            value={user.preferredArrivalEnd || ''}
-            onChange={e => handleChange('preferredArrivalEnd', e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            sx={{ flex: 1 }}
-          />
-        </Box>
-
-        <Box display="flex" gap={2} mt={2}>
-          <TextField
-            label="Flexibility (minutes)"
-            type="number"
-            value={user.flexibilityMinutes || ''}
-            onChange={e => handleChange('flexibilityMinutes', parseInt(e.target.value) || 0)}
-            sx={{ flex: 1 }}
-            margin="normal"
-          />
-          <TextField
-            label="Flexibility (km)"
-            type="number"
-            step="0.1"
-            value={user.flexibilityKm || ''}
-            onChange={e => handleChange('flexibilityKm', parseFloat(e.target.value) || 0)}
-            sx={{ flex: 1 }}
-            margin="normal"
-          />
-        </Box>
-
-        {user.role === 'DRIVER' && (
-          <TextField
-            label="Available Seats"
-            type="number"
-            value={user.availableSeats || ''}
-            onChange={e => handleChange('availableSeats', parseInt(e.target.value) || 0)}
-            margin="normal"
-            fullWidth
-          />
-        )}
-
+      </Paper>
+    </Container>
+    <Box sx={{ display: 'flex', justifyContent: 'center'}}>
         <Button
-          variant="contained"
-          color="primary"
-          startIcon={<Save size={20} />}
-          onClick={updateUser}
-          disabled={loading}
-          sx={{ mt: 3 }}
+          variant="outlined"
+          color="error"
+          onClick={() => {
+            // Clear user session (example: localStorage, cookies)
+            localStorage.removeItem('authToken');
+            window.location.href = '/login';
+          } }
+          sx={{ fontWeight: 'bold' }}
         >
-          {loading ? 'Saving...' : 'Save Changes'}
+          Logout
         </Button>
-      </Box>
-    </Box>
+      </Box></>
   );
 };
 

@@ -1,6 +1,21 @@
 import { useState } from 'react';
+import { 
+  Container, 
+  Paper, 
+  Typography, 
+  TextField, 
+  Button, 
+  Box, 
+  FormControl, 
+  FormLabel, 
+  RadioGroup, 
+  FormControlLabel, 
+  Radio, 
+  Grid,
+  Link
+} from '@mui/material';
 
-export default function RegisterForm() {
+const RegisterPage = () => {
   const [role, setRole] = useState('PASSENGER');
   const [form, setForm] = useState({
     name: '', email: '', password: '', phone: '',
@@ -33,34 +48,185 @@ export default function RegisterForm() {
     });
   };
 
-  const fieldStyle = { display: 'block', margin: '8px 0', padding: '6px', width: '100%', maxWidth: '300px' };
-
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: '320px', margin: '0 auto' }}>
-      <input name="name" placeholder="Name" onChange={handleChange} required style={fieldStyle} />
-      <input name="email" type="email" placeholder="Email" onChange={handleChange} required style={fieldStyle} />
-      <input name="password" type="password" placeholder="Password" onChange={handleChange} required style={fieldStyle} />
-      <input name="phone" placeholder="Phone" onChange={handleChange} required style={fieldStyle} />
-      <input name="homeAddress" placeholder="Home Address" onChange={handleChange} style={fieldStyle} />
-      <input name="officeAddress" placeholder="Office Address" onChange={handleChange} style={fieldStyle} />
-      <input name="preferredArrivalStart" type="time" placeholder="Preferred Arrival Start" onChange={handleChange} style={fieldStyle} />
-      <input name="preferredArrivalEnd" type="time" placeholder="Preferred Arrival End" onChange={handleChange} style={fieldStyle} />
-      <input name="flexibilityMinutes" type="number" placeholder="Flexibility Minutes" onChange={handleChange} style={fieldStyle} />
-      <input name="flexibilityKm" type="number" step="0.1" placeholder="Flexibility Km" onChange={handleChange} style={fieldStyle} />
+    <Container maxWidth="sm" sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', py: 4 }}>
+      <Paper elevation={3} sx={{ p: 4, width: '100%' }}>
+        <Box sx={{ textAlign: 'center', mb: 3 }}>
+          <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 1 }}>
+            RideTogether
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Create your account
+          </Typography>
+        </Box>
 
-      <select value={role} onChange={e => setRole(e.target.value)} style={fieldStyle}>
-        <option value="PASSENGER">Passenger</option>
-        <option value="DRIVER">Driver</option>
-      </select>
+        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <TextField
+            name="name"
+            label="Full Name *"
+            placeholder="Enter your full name"
+            onChange={handleChange}
+            required
+            fullWidth
+            variant="outlined"
+          />
+          
+          <TextField
+            name="email"
+            type="email"
+            label="Email *"
+            placeholder="Enter your email"
+            onChange={handleChange}
+            required
+            fullWidth
+            variant="outlined"
+          />
+          
+          <TextField
+            name="phone"
+            label="Phone *"
+            placeholder="Enter your phone number"
+            onChange={handleChange}
+            required
+            fullWidth
+            variant="outlined"
+          />
+          
+          <TextField
+            name="password"
+            type="password"
+            label="Password *"
+            placeholder="Enter your password (min 6 characters)"
+            onChange={handleChange}
+            required
+            fullWidth
+            variant="outlined"
+            inputProps={{ minLength: 6 }}
+          />
 
-      {role === 'DRIVER' && (
-        <>
-          <input name="availableSeats" type="number" placeholder="Available Seats" onChange={handleChange} style={fieldStyle} />
-          <input name="costPer100KmEUR" type="number" step="0.01" placeholder="Cost per 100 km" onChange={handleChange} style={fieldStyle} />
-        </>
-      )}
+          <FormControl component="fieldset" sx={{ mt: 2 }}>
+            <FormLabel component="legend">Role</FormLabel>
+            <RadioGroup
+              row
+              value={role}
+              onChange={e => setRole(e.target.value)}
+            >
+              <FormControlLabel value="DRIVER" control={<Radio />} label="Driver" />
+              <FormControlLabel value="PASSENGER" control={<Radio />} label="Passenger" />
+            </RadioGroup>
+          </FormControl>
 
-      <button type="submit" style={{ ...fieldStyle, width: 'auto' }}>Register</button>
-    </form>
+          <TextField
+            name="homeAddress"
+            label="Home Address"
+            placeholder="Enter your home address"
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+          />
+          
+          <TextField
+            name="officeAddress"
+            label="Office Address"
+            placeholder="Enter your office address"
+            onChange={handleChange}
+            fullWidth
+            variant="outlined"
+          />
+
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TextField
+                name="preferredArrivalStart"
+                type="time"
+                label="Arrival Start"
+                onChange={handleChange}
+                fullWidth
+                variant="outlined"
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                name="preferredArrivalEnd"
+                type="time"
+                label="Arrival End"
+                onChange={handleChange}
+                fullWidth
+                variant="outlined"
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+          </Grid>
+
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TextField
+                name="flexibilityMinutes"
+                type="number"
+                label="Flexibility (minutes)"
+                placeholder="15"
+                onChange={handleChange}
+                fullWidth
+                variant="outlined"
+                inputProps={{ min: 0 }}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                name="flexibilityKm"
+                type="number"
+                label="Flexibility (km)"
+                placeholder="2"
+                onChange={handleChange}
+                fullWidth
+                variant="outlined"
+                inputProps={{ min: 0, step: 0.1 }}
+              />
+            </Grid>
+          </Grid>
+
+          {role === 'DRIVER' && (
+            <TextField
+              name="availableSeats"
+              type="number"
+              label="Free Spaces"
+              placeholder="Available seats"
+              onChange={handleChange}
+              fullWidth
+              variant="outlined"
+              inputProps={{ min: 1, max: 8 }}
+            />
+          )}
+
+          <Button
+            type="submit"
+            variant="contained"
+            fullWidth
+            sx={{ 
+              mt: 3, 
+              py: 1.5, 
+              backgroundColor: '#ef5350', 
+              '&:hover': { backgroundColor: '#d32f2f' },
+              fontWeight: 'bold'
+            }}
+          >
+            Create Account
+          </Button>
+
+          <Box sx={{ textAlign: 'center', mt: 2 }}>
+            <Typography variant="body2" color="text.secondary">
+              Already have an account?{' '}
+              <Link href="/login" sx={{ color: '#ef5350', fontWeight: 'medium' }}>
+                Sign in
+              </Link>
+            </Typography>
+          </Box>
+        </Box>
+      </Paper>
+    </Container>
   );
-}
+};
+
+
+export default RegisterPage;
