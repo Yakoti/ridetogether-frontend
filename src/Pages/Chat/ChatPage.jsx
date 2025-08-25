@@ -21,7 +21,8 @@ const ChatPage = ({
   newMessage,
   setNewMessage,
   sendMessage,
-  currentUser 
+  currentUser,
+  markChatAsRead 
 }) => {
   // If a chat is selected, show the detail view
   if (selectedChat) {
@@ -58,16 +59,17 @@ const ChatPage = ({
           {chats.map((chat) => (
             <Paper key={chat.id} elevation={1} sx={{ mb: 2, '&:hover': { boxShadow: 3 } }}>
               <ListItem 
-                onClick={() => setSelectedChat && setSelectedChat(chat)}
+                onClick={() => markChatAsRead && markChatAsRead(chat)}
                 sx={{ 
                   p: 2, 
                   cursor: 'pointer',
-                  '&:hover': { backgroundColor: '#f5f5f5' }
+                  '&:hover': { backgroundColor: '#f5f5f5' },
+                  backgroundColor: chat.isRead ? 'transparent' : '#fff3e0' // Light background for unread
                 }}
               >
                 <ListItemText
                   primary={
-                    <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#333', mb: 0.5 }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: chat.isRead ? 'normal' : 'bold', color: '#333', mb: 0.5 }}>
                       {chat.title}
                     </Typography>
                   }
@@ -81,17 +83,19 @@ const ChatPage = ({
                   <Typography variant="caption" sx={{ color: '#999', mb: 1 }}>
                     {chat.time}
                   </Typography>
-                  <Chip 
-                    label={chat.messages ? chat.messages.length : "1"} 
-                    size="small" 
-                    sx={{ 
-                      backgroundColor: '#ef5350', 
-                      color: 'white', 
-                      fontSize: '0.75rem',
-                      height: 20,
-                      minWidth: 20
-                    }} 
-                  />
+                  {!chat.isRead && (
+                    <Chip 
+                      label="1" 
+                      size="small" 
+                      sx={{ 
+                        backgroundColor: '#ef5350', 
+                        color: 'white', 
+                        fontSize: '0.75rem',
+                        height: 20,
+                        minWidth: 20
+                      }} 
+                    />
+                  )}
                 </Box>
               </ListItem>
             </Paper>

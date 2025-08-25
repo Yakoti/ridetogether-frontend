@@ -8,7 +8,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import Badge from '@mui/material/Badge';
 
-const FooterNav = () => {
+const FooterNav = ({ chatCount = 0 }) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const getValue = () => {
@@ -47,7 +47,7 @@ const FooterNav = () => {
         label="Chat" 
         value="chat" 
         icon={
-          <Badge badgeContent={2} color="error">
+          <Badge badgeContent={chatCount > 0 ? chatCount : null} color="error">
             <ChatIcon />
           </Badge>
         } 

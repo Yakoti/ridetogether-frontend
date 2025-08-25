@@ -15,7 +15,7 @@ const UserCard = ({ user, isDriver = false, handleUserAction }) => {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <Box sx={{ flex: 1 }}>
             <Typography variant="h6" sx={{ color: '#d32f2f', fontWeight: 'bold', mb: 1 }}>
-              {isDriver ? `Driver ${user.id}` : `Passenger ${user.id}`}
+              {isDriver ? user.name : user.name}
             </Typography>
             
             {isDriver && (

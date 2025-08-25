@@ -10,6 +10,20 @@ import LoginPage from '../Pages/Login/LoginPage';
 import RegisterPage from '../Pages/Register/RegisterPage';
 
 const TransportSharingApp = () => {
+  // Version to force refresh of localStorage when needed
+  const DATA_VERSION = '2.0';
+  
+  // Check if we need to clear old data
+  useEffect(() => {
+    const currentVersion = localStorage.getItem('dataVersion');
+    if (currentVersion !== DATA_VERSION) {
+      // Clear old data and set new version
+      localStorage.removeItem('users');
+      localStorage.removeItem('chats');
+      localStorage.setItem('dataVersion', DATA_VERSION);
+    }
+  }, []);
+
   // Mock current user (as driver based on screenshot)
   const [currentUser, setCurrentUser] = useState(() => {
     const saved = localStorage.getItem('currentUser');
@@ -28,7 +42,7 @@ const TransportSharingApp = () => {
     return saved ? JSON.parse(saved) : [
       {
         id: 3,
-        name: 'Passenger 3',
+        name: 'Alice',
         role: 'PASSENGER',
         preferredArrivalStart: '10:05',
         routeDeviation: 0.5,
@@ -37,7 +51,7 @@ const TransportSharingApp = () => {
       },
       {
         id: 4,
-        name: 'Passenger 4',
+        name: 'Bob',
         role: 'PASSENGER',
         preferredArrivalStart: '09:50',
         routeDeviation: 1.2,
@@ -46,7 +60,7 @@ const TransportSharingApp = () => {
       },
       {
         id: 5,
-        name: 'Passenger 5',
+        name: 'Carol',
         role: 'PASSENGER',
         preferredArrivalStart: '10:10',
         routeDeviation: 0.8,
@@ -60,31 +74,7 @@ const TransportSharingApp = () => {
 
   const [chats, setChats] = useState(() => {
     const saved = localStorage.getItem('chats');
-    return saved ? JSON.parse(saved) : [
-      {
-        id: 1,
-        title: 'John Driver + Alice Passenger',
-        subtitle: 'Route created! Driver: John Driver. Route details...',
-        time: '10:21',
-        driverId: 1,
-        passengerId: 101,
-        messages: [
-          { id: 1, senderId: 1, text: 'Welcome Alice! I\'ll pick you up at 10:00 AM', timestamp: '10:21' },
-          { id: 2, senderId: 101, text: 'Perfect! Thank you', timestamp: '10:22' }
-        ]
-      },
-      {
-        id: 2,
-        title: 'John Driver + Bob Passenger',
-        subtitle: 'Route created! Driver: John Driver. Route details...',
-        time: '10:21',
-        driverId: 1,
-        passengerId: 102,
-        messages: [
-          { id: 1, senderId: 1, text: 'Hi Bob! Route is confirmed for tomorrow', timestamp: '10:21' }
-        ]
-      }
-    ];
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [selectedChat, setSelectedChat] = useState(null);
@@ -140,6 +130,7 @@ const TransportSharingApp = () => {
         time: new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }),
         driverId: currentUser.id,
         passengerId: targetUser.id,
+        isRead: false, // New chats are unread
         messages: [
           { 
             id: 1, 
@@ -159,6 +150,17 @@ const TransportSharingApp = () => {
       
       alert(`Added ${targetUser.name} to your ride! Check your chats.`);
     }
+  };
+
+  // Handler for marking chat as read when clicked
+  const markChatAsRead = (chat) => {
+    if (!chat.isRead) {
+      const updatedChats = chats.map(c => 
+        c.id === chat.id ? { ...c, isRead: true } : c
+      );
+      setChats(updatedChats);
+    }
+    setSelectedChat({ ...chat, isRead: true });
   };
 
   const sendMessage = () => {
@@ -213,7 +215,8 @@ const TransportSharingApp = () => {
                 setMessages={setMessages} 
                 newMessage={newMessage} 
                 setNewMessage={setNewMessage} 
-                sendMessage={sendMessage} 
+                sendMessage={sendMessage}
+                markChatAsRead={markChatAsRead} 
               />} 
             />
             <Route path="/profile" element={
@@ -247,7 +250,7 @@ const TransportSharingApp = () => {
           </Routes>
         </div>
       </div>
-      <FooterNav />
+      <FooterNav chatCount={chats.filter(chat => !chat.isRead).length} />
     </>
   );
 };
