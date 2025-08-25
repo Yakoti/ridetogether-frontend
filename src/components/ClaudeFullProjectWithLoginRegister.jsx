@@ -10,23 +10,16 @@ import LoginPage from '../Pages/Login/LoginPage';
 import RegisterPage from '../Pages/Register/RegisterPage';
 
 const TransportSharingApp = () => {
-  // Version to force refresh of localStorage when needed
-  const DATA_VERSION = '2.0';
-  
-  // Check if we need to clear old data
+
+  // Force clear localStorage completely to fix User 2 issue
   useEffect(() => {
-    const currentVersion = localStorage.getItem('dataVersion');
-    if (currentVersion !== DATA_VERSION) {
-      // Clear old data and set new version
-      localStorage.removeItem('users');
-      localStorage.removeItem('chats');
-      localStorage.setItem('dataVersion', DATA_VERSION);
-    }
+    localStorage.clear();
+    console.log('Force cleared localStorage to fix User 2 issue');
   }, []);
 
   // Mock current user (as driver based on screenshot)
   const [currentUser, setCurrentUser] = useState(() => {
-    const saved = localStorage.getItem('currentUser');
+    const saved = localStorage.getItem('currentUser_v4_clean');
     return saved ? JSON.parse(saved) : {
       id: 1,
       name: 'John Driver',
@@ -38,8 +31,8 @@ const TransportSharingApp = () => {
 
   // Mock users data - available passengers for drivers to add
   const [users, setUsers] = useState(() => {
-    const saved = localStorage.getItem('users');
-    return saved ? JSON.parse(saved) : [
+    const saved = localStorage.getItem('users_v4_clean');
+    const defaultUsers = [
       {
         id: 3,
         name: 'Alice',
@@ -66,20 +59,119 @@ const TransportSharingApp = () => {
         routeDeviation: 0.8,
         timeDeviation: 3,
         route: 'Studentski Grad -> City Center'
+      },
+      {
+        id: 6,
+        name: 'Angel',
+        role: 'PASSENGER',
+        preferredArrivalStart: '9:30',
+        routeDeviation: 1.5,
+        timeDeviation: 5,
+        route: 'Manastirski -> Office X'
+      },
+      {
+        id: 7,
+        name: 'Svetlio',
+        role: 'PASSENGER',
+        preferredArrivalStart: '9:30',
+        routeDeviation: 1.5,
+        timeDeviation: 5,
+        route: 'Studentski Grad -> Office X'
       }
     ];
+    
+    const users = saved ? JSON.parse(saved) : defaultUsers;
+    console.log('Loaded users:', users);
+    return users;
   });
 
   const [isLoading, setIsLoading] = useState(false);
 
   const [chats, setChats] = useState(() => {
-    const saved = localStorage.getItem('chats');
-    return saved ? JSON.parse(saved) : [];
+    // Use a new key to force fresh data
+    const saved = localStorage.getItem('chats_v4_clean');
+    const defaultChats = [
+      { id: 1, participants: [1, 3], isRead: false, messages: [
+        { id: 1, sender: 1, text: "Hi Alice! I can pick you up tomorrow at 9:45 AM", timestamp: "2024-01-15T09:30:00Z" },
+        { id: 2, sender: 3, text: "That sounds perfect! I'll be ready at the entrance", timestamp: "2024-01-15T09:32:00Z" }
+      ]},
+      { id: 2, participants: [1, 4], isRead: false, messages: [
+        { id: 3, sender: 1, text: "Hey Bob, are you available for a ride on Wednesday?", timestamp: "2024-01-15T10:00:00Z" },
+        { id: 4, sender: 4, text: "Sure! What time works best for you?", timestamp: "2024-01-15T10:05:00Z" }
+      ]}
+    ];
+    
+    console.log('Loading chats - saved from localStorage:', saved);
+    const chats = saved ? JSON.parse(saved) : defaultChats;
+    console.log('Final loaded chats:', chats);
+    return chats;
   });
 
   const [selectedChat, setSelectedChat] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
+
+  // Function to get user name by ID
+  const getUserName = (userId) => {
+    if (userId === currentUser.id) return currentUser.name;
+    const user = users.find(u => u.id === userId);
+    return user ? user.name : `User ${userId}`;
+  };
+
+  // Function to process raw chats data for display
+  const processChatsForDisplay = (rawChats) => {
+    return rawChats.map(chat => {
+      // If chat already has display properties, return as is
+      if (chat.title && chat.subtitle && chat.time) {
+        return chat;
+      }
+
+      // Otherwise, generate display properties from raw data
+      const otherParticipant = chat.participants.find(id => id !== currentUser.id);
+      const otherParticipantName = getUserName(otherParticipant);
+      const lastMessage = chat.messages[chat.messages.length - 1];
+      const lastMessageTime = lastMessage ? new Date(lastMessage.timestamp).toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' }) : '';
+
+      return {
+        ...chat,
+        title: `Chat with ${otherParticipantName}`,
+        subtitle: lastMessage ? lastMessage.text : 'No messages yet',
+        time: lastMessageTime,
+        isRead: chat.isRead !== undefined ? chat.isRead : true // Preserve existing isRead status
+      };
+    });
+  };
+
+  // Get processed chats for display (only when users are loaded)
+  const processedChats = users.length > 0 ? processChatsForDisplay(chats) : [];
+  
+  // Debug: Log chat read status
+  console.log('Raw chats:', chats.map(c => ({ id: c.id, isRead: c.isRead })));
+  console.log('Processed chats:', processedChats.map(c => ({ id: c.id, isRead: c.isRead })));
+  console.log('Unread count:', processedChats.filter(chat => !chat.isRead).length);
+
+  // Filter out users who already have chats with current user
+  const availableUsers = users.filter(user => {
+    const hasExistingChat = chats.some(chat => 
+      chat.participants && 
+      chat.participants.includes(currentUser.id) && 
+      chat.participants.includes(user.id)
+    );
+    return !hasExistingChat;
+  });
+
+  // Save to localStorage when data changes
+  useEffect(() => {
+    localStorage.setItem('currentUser_v4_clean', JSON.stringify(currentUser));
+  }, [currentUser]);
+
+  useEffect(() => {
+    localStorage.setItem('users_v4_clean', JSON.stringify(users));
+  }, [users]);
+
+  useEffect(() => {
+    localStorage.setItem('chats_v4_clean', JSON.stringify(chats));
+  }, [chats]);
 
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [registerForm, setRegisterForm] = useState({
@@ -99,18 +191,7 @@ const TransportSharingApp = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
 
-  // Save to localStorage when state changes
-  useEffect(() => {
-    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-  }, [currentUser]);
 
-  useEffect(() => {
-    localStorage.setItem('users', JSON.stringify(users));
-  }, [users]);
-
-  useEffect(() => {
-    localStorage.setItem('chats', JSON.stringify(chats));
-  }, [chats]);
 
   // Load messages when selectedChat changes
   useEffect(() => {
@@ -200,7 +281,7 @@ const TransportSharingApp = () => {
             <Route path="/" element={
               <HomePage 
                 currentUser={currentUser} 
-                users={users} 
+                users={availableUsers} 
                 isLoading={isLoading} 
                 handleUserAction={handleUserAction} 
               />} 
@@ -208,7 +289,7 @@ const TransportSharingApp = () => {
             <Route path="/chat" element={
               <ChatPage 
                 currentUser={currentUser} 
-                chats={chats} 
+                chats={processedChats} 
                 selectedChat={selectedChat} 
                 setSelectedChat={setSelectedChat} 
                 messages={messages} 
@@ -250,7 +331,7 @@ const TransportSharingApp = () => {
           </Routes>
         </div>
       </div>
-      <FooterNav chatCount={chats.filter(chat => !chat.isRead).length} />
+      <FooterNav chatCount={processedChats.filter(chat => !chat.isRead).length} />
     </>
   );
 };
